@@ -129,7 +129,7 @@ def evaluate_regression(y_true, y_pred):
     r_squared = 1 - (rss/tss)
 
     # Root Mean Squared Error
-    rmse = np.sqrt(np.sum(y_true-y_pred)**2)/len(y_pred)
+    rmse = np.sqrt( np.sum(np.power(y_true-y_pred, 2))/len(y_true) )
 
     # Mean Absolute Error
     mae = (1/len(y_true))*np.sum(abs(y_true-y_pred))
@@ -172,15 +172,14 @@ def anscombe_quartet():
 
     # Anscombe's quartet consists of four datasets
     # TODO: Construct an array that contains, for each entry, the identifier of each dataset
-    datasets = None
+    datasets = anscombe["dataset"].unique()
 
     models = {}
     results = {"R2": [], "RMSE": [], "MAE": []}
     for dataset in datasets:
 
         # Filter the data for the current dataset
-        # TODO
-        data = None
+        data = anscombe.loc[anscombe["dataset"] == dataset]
 
         # Create a linear regression model
         # TODO
