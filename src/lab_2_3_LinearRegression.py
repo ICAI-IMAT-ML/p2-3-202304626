@@ -35,9 +35,36 @@ class LinearRegressor:
         if np.ndim(X) > 1:
             X = X.reshape(1, -1)
 
-        # TODO: Train linear regression model with only one coefficient
-        self.coefficients = None
-        self.intercept = None
+        # Longitud de los vectores
+        N = len(X)
+
+        # Calculamos el parámetro w
+        term1 = np.sum([X[i]*y[i] for i in range(N)])  # sumatorio en i de Xi*Yi
+        
+        term_2_1 = 0
+        for i in range(N):
+            for j in range(N):
+                term_2_1 += X[i]*y[j]  # sumatorio en i,j de Xi*Yj
+        term2 = (1/N)*term_2_1
+
+        term3 = np.sum([X[i]**2 for i in range(N)])  # sumatorio en i de Xi**2
+        
+        term_4_1 = 0
+        for i in range(N):
+            for j in range(N):
+                term_4_1 += X[i]*X[j]  # sumatorio en i,j de Xi*xj
+        term4 = (1/N)*term_4_1
+
+        w = (term1 - term2) / (term3 - term4)  # fórmula deducida manualmente en clase
+
+        # Calculamos el parámetro b
+        y_media = (1/N)*np.sum([y[i] for i in range(N)])
+        x_media = (1/N)*np.sum([X[i] for i in range(N)])
+        b = y_media - w*x_media
+
+        # Train linear regression model with only one coefficient
+        self.coefficients = w
+        self.intercept = b
 
     # This part of the model you will only need for the last part of the notebook
     def fit_multiple(self, X, y):
@@ -54,9 +81,12 @@ class LinearRegressor:
         Returns:
             None: Modifies the model's coefficients and intercept in-place.
         """
-        # TODO: Train linear regression model with multiple coefficients
-        self.intercept = None
-        self.coefficients = None
+        X = np.c_[X,np.ones(X.shape[0])]
+        
+        w = np.linalg.inv(X.T @ X) @ (X.T @ y)
+
+        self.intercept = w[-1]
+        self.coefficients = w[:-1]
 
     def predict(self, X):
         """
@@ -75,11 +105,9 @@ class LinearRegressor:
             raise ValueError("Model is not yet fitted")
 
         if np.ndim(X) == 1:
-            # TODO: Predict when X is only one variable
-            predictions = None
+            predictions = X*self.coefficients + self.intercept
         else:
-            # TODO: Predict when X is more than one variable
-            predictions = None
+            predictions = X@self.coefficients + self.intercept
         return predictions
 
 
@@ -94,17 +122,17 @@ def evaluate_regression(y_true, y_pred):
     Returns:
         dict: A dictionary containing the R^2, RMSE, and MAE values.
     """
+    rss = np.sum((y_true-y_pred)**2)
+    tss = np.sum((y_true-np.mean(y_true))**2)
+
     # R^2 Score
-    # TODO: Calculate R^2
-    r_squared = None
+    r_squared = 1 - (rss/tss)
 
     # Root Mean Squared Error
-    # TODO: Calculate RMSE
-    rmse = None
+    rmse = np.sqrt(np.sum(y_true-y_pred)**2)/len(y_pred)
 
     # Mean Absolute Error
-    # TODO: Calculate MAE
-    mae = None
+    mae = (1/len(y_true))*np.sum(abs(y_true-y_pred))
 
     return {"R2": r_squared, "RMSE": rmse, "MAE": mae}
 
@@ -189,3 +217,8 @@ def anscombe_quartet():
 
 
 # Go to the notebook to visualize the results
+
+
+##################################
+##################################
+##################################
