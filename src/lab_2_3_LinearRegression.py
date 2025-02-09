@@ -81,12 +81,12 @@ class LinearRegressor:
         Returns:
             None: Modifies the model's coefficients and intercept in-place.
         """
-        X = np.c_[X,np.ones(X.shape[0])]
+        X = np.c_[X,np.ones(X.shape[0])]  # añadimos una columna de 1s
         
-        w = np.linalg.inv(X.T @ X) @ (X.T @ y)
+        w = np.linalg.inv(X.T @ X) @ (X.T @ y)  # la @ se usa para hacer el producto, X.T representa la traspuesta
 
-        self.intercept = w[-1]
-        self.coefficients = w[:-1]
+        self.intercept = w[-1]  # extraemos el valor del término independiente (el último del vector w)
+        self.coefficients = w[:-1]  # extraemos los coeficientes de la regresión (son todos los términos de w menos el último)
 
     def predict(self, X):
         """
@@ -105,9 +105,9 @@ class LinearRegressor:
             raise ValueError("Model is not yet fitted")
 
         if np.ndim(X) == 1:
-            predictions = X*self.coefficients + self.intercept
+            predictions = X*self.coefficients + self.intercept  # Y = X*w + b  (modo unidimensional)
         else:
-            predictions = X@self.coefficients + self.intercept
+            predictions = X@self.coefficients + self.intercept  # Y = X*w + b  (modo multidimensional)
         return predictions
 
 
